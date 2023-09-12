@@ -6,7 +6,7 @@
     <title>Unity WebGL Player | DNA</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="manifest" id="my-manifest-placeholder">
   </head>
   <body>
     <div id="unity-container">
@@ -20,6 +20,68 @@
       <div id="unity-warning"> </div>
     </div>
     <script>
+
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let ca = document.cookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+
+
+var mystarturl = "index.html";
+let partcode = location.search.split('partcode=')[1];
+if (typeof partcode !== 'undefined'){
+setCookie("partcode",partcode,21)
+mystarturl=mystarturl+'?partcode='+partcode;
+}
+
+
+
+
+
+var myDynamicManifest = {
+    "name": "DNA",
+    "short_name": "DNA",
+    "start_url": mystarturl,
+    "display": "fullscreen",
+    "background_color": "#FFFFFF",
+    "theme_color": "#fff",
+    "description": "DNA",
+    "icons": [{
+      "src": "TemplateData/icons/unity-logo-light.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }]
+  }
+const stringManifest = JSON.stringify(myDynamicManifest);
+const blob = new Blob([stringManifest], {type: 'application/json'});
+const manifestURL = URL.createObjectURL(blob);
+document.querySelector('#my-manifest-placeholder').setAttribute('href', manifestURL);
+
+
+
+
+
+
+
       window.addEventListener("load", function () {
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("ServiceWorker.js");
@@ -65,7 +127,7 @@
         streamingAssetsUrl: "StreamingAssets",
         companyName: "MartyB",
         productName: "DNA",
-        productVersion: "1.0.0.17",
+        productVersion: "1.0.0.19",
         showBanner: unityShowBanner,
       };
 
